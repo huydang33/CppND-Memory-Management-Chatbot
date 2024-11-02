@@ -11,7 +11,8 @@ GraphNode::~GraphNode()
     //// STUDENT CODE
     ////
 
-    delete _chatBot; 
+    /* Minor bug: Segementation fault due to double deallocation */
+    // delete _chatBot;
 
     ////
     //// EOF STUDENT CODE
