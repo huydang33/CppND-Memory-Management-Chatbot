@@ -65,25 +65,27 @@ ChatBot &ChatBot::operator=(const ChatBot &source)
     delete _image; // Free existing resource
 
     // Deep copy
-    if (source._image != nullptr) {
-        _image = new wxBitmap(*source._image);
-    } else {
-        _image = nullptr;
-    }
+    _chatLogic = source._chatLogic;
+    _rootNode = source._rootNode;
+    _image = new wxBitmap(*source._image);
 
     return *this;
 }
 
 // Move Constructor
-ChatBot::ChatBot(ChatBot &&source) noexcept 
+ChatBot::ChatBot(ChatBot &&source) 
 {
     std::cout << "ChatBot Move Constructor" << std::endl;
-    _image = source._image; // Steal the resource
-    source._image = nullptr; // Leave source in a valid state
+    _chatLogic = source._chatLogic;
+    _rootNode = source._rootNode;
+    _image = source._image;
+    source._chatLogic = nullptr;
+    source._rootNode = nullptr;
+    source._image = nullptr;
 }
 
 // Move Assignment Operator
-ChatBot &ChatBot::operator=(ChatBot &&source) noexcept 
+ChatBot &ChatBot::operator=(ChatBot &&source) 
 {
     std::cout << "ChatBot Move Assignment Operator" << std::endl;
 
@@ -92,7 +94,11 @@ ChatBot &ChatBot::operator=(ChatBot &&source) noexcept
     delete _image; // Free existing resource
 
     // Steal the resource
+   _chatLogic = source._chatLogic;
+    _rootNode = source._rootNode;
     _image = source._image;
+    source._chatLogic = nullptr;
+    source._rootNode = nullptr;
     source._image = nullptr;
 
     return *this;
@@ -145,6 +151,8 @@ void ChatBot::SetCurrentNode(GraphNode *node)
     std::uniform_int_distribution<int> dis(0, answers.size() - 1);
     std::string answer = answers.at(dis(generator));
 
+    // update chatBot for chatLogic
+    _chatLogic->SetChatbotHandle(this); 
     // send selected node answer to user
     _chatLogic->SendMessageToUser(answer);
 }
